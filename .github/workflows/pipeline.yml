@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - main
+    pull_request:
+      branches: [main]
+      types: [opened, synchronize]
 
 jobs:
 
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
