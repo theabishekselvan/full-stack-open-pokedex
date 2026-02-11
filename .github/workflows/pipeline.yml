@@ -4,12 +4,11 @@ on:
   push:
     branches:
       - main
-    pull_request:
-      branches: [main]
-      types: [opened, synchronize]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 
 jobs:
-
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
@@ -27,3 +26,11 @@ jobs:
         run: npm run build
       - name: test
         run: npm run test
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
