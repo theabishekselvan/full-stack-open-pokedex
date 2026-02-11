@@ -4,15 +4,13 @@ on:
   push:
     branches:
       - main
-    pull_request:
-      branches: [main]
-      types: [opened, synchronize]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 
 jobs:
-
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,3 +25,12 @@ jobs:
         run: npm run build
       - name: test
         run: npm run test
+  tag_release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
